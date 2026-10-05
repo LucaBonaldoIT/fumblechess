@@ -30,7 +30,8 @@ Everything runs in the browser. There is no backend.
 | `src/engine/encoding.ts`    | Position → 64 × 22 feature tensor. **Must match `ml/encode.py`**                         |
 | `src/engine/repetitions.ts` | Counts earlier occurrences of a position along the game and the search line              |
 | `src/engine/mcts.ts`        | PUCT search guided by the network. Pure: the evaluator is injected, so it is unit-tested |
-| `src/engine/network.ts`     | Loads the level's ONNX model, serialises and batches inference                           |
+| `src/engine/network.ts`     | Loads the level's ONNX model in a worker, tracks the download state, batches inference   |
+| `src/engine/ort.worker.ts`  | The dedicated worker that runs ONNX Runtime Web, so the page stays responsive            |
 | `src/engine/levels.ts`      | The three levels: label, Elo band, search budget and temperature                         |
 | `src/engine/stockfish.ts`   | Runs Stockfish 19 (lite, single thread) in a worker; newer requests supersede older ones |
 | `src/engine/eval.ts`        | Pure mapping from a Stockfish score to the evaluation bar                                |
