@@ -1,15 +1,11 @@
-import * as ort from 'onnxruntime-web/wasm';
-import wasmUrl from 'onnxruntime-web/ort-wasm-simd-threaded.wasm?url';
-import { N_FEATURES } from './encoding';
 import { LEVELS } from './levels';
+import type { WorkerRequest, WorkerResponse } from './ort.worker';
 import type { BatchOutput, Level, SearchConfig } from './types';
 
-ort.env.wasm.numThreads = 1;
-ort.env.wasm.proxy = true; // run the model in a worker so the page stays responsive during search
-ort.env.wasm.wasmPaths = { wasm: wasmUrl };
+// The networks run in a dedicated worker (see ort.worker.ts): downloading, initialising and evaluating never block the page.
+const worker = new Worker(new URL('./ort.worker.ts', import.meta.url), { type: 'module' });
 
 let level: Level = 1;
-const sessions = new Map<Level, Promise<ort.InferenceSession>>();
 
 export type ModelState = 'loading' | 'ready' | 'error';
 const states = new Map<Level, ModelState>();
@@ -28,53 +24,65 @@ function setState(l: Level, state: ModelState) {
   listeners.forEach((fn) => fn());
 }
 
-function getSession(l: Level) {
-  let s = sessions.get(l);
-  if (!s) {
-    setState(l, 'loading');
-    s = ort.InferenceSession.create(`/models/level${l}.onnx`, { executionProviders: ['wasm'] });
-    s.then(
-      () => setState(l, 'ready'),
-      () => {
-        sessions.delete(l); // allow a retry if loading failed
-        setState(l, 'error');
-      },
-    );
-    sessions.set(l, s);
+const loads = new Map<Level, Promise<void>>();
+const loadWaiters = new Map<Level, { resolve: () => void; reject: (e: Error) => void }>();
+const runWaiters = new Map<
+  number,
+  { resolve: (o: BatchOutput) => void; reject: (e: Error) => void }
+>();
+let nextId = 1;
+
+worker.onmessage = (e: MessageEvent<WorkerResponse>) => {
+  const msg = e.data;
+  if (msg.type === 'loaded') {
+    setState(msg.level as Level, 'ready');
+    loadWaiters.get(msg.level as Level)?.resolve();
+    loadWaiters.delete(msg.level as Level);
+  } else if (msg.type === 'load-error') {
+    loads.delete(msg.level as Level); // allow a retry
+    setState(msg.level as Level, 'error');
+    loadWaiters.get(msg.level as Level)?.reject(new Error(msg.message));
+    loadWaiters.delete(msg.level as Level);
+  } else if (msg.type === 'result') {
+    runWaiters.get(msg.id)?.resolve({ policy: msg.policy, wdl: msg.wdl });
+    runWaiters.delete(msg.id);
+  } else {
+    runWaiters.get(msg.id)?.reject(new Error(msg.message));
+    runWaiters.delete(msg.id);
   }
-  return s;
+};
+
+function post(msg: WorkerRequest) {
+  worker.postMessage(msg);
+}
+
+function load(l: Level): Promise<void> {
+  let p = loads.get(l);
+  if (!p) {
+    setState(l, 'loading');
+    p = new Promise<void>((resolve, reject) => loadWaiters.set(l, { resolve, reject }));
+    p.catch(() => {}); // the state listener reports failures
+    loads.set(l, p);
+    post({ type: 'load', level: l, url: new URL(`/models/level${l}.onnx`, location.href).href });
+  }
+  return p;
 }
 
 /** Select the level's model and start loading it so the first move is not slow. */
 export function setLevel(l: Level) {
   level = l;
-  void getSession(l).catch(() => {});
+  void load(l);
 }
 
 export const currentSearch = (): SearchConfig => LEVELS.find((l) => l.id === level)!.search;
 
-// ORT sessions reject overlapping run() calls, so serialize inference.
-let queue: Promise<unknown> = Promise.resolve();
-
 /** Evaluate `n` encoded positions with the current level's model in one call. */
-export function evaluateBatch(features: Float32Array, n: number): Promise<BatchOutput> {
-  const job = queue.then(async () => {
-    const sess = await getSession(level);
-    const out = await sess.run({ board: new ort.Tensor('float32', features, [n, 64, N_FEATURES]) });
-    const v = out.value.data as Float32Array;
-    const wdl = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) {
-      const m = Math.max(v[i * 3], v[i * 3 + 1], v[i * 3 + 2]);
-      const e0 = Math.exp(v[i * 3] - m);
-      const e1 = Math.exp(v[i * 3 + 1] - m);
-      const e2 = Math.exp(v[i * 3 + 2] - m);
-      const t = e0 + e1 + e2;
-      wdl[i * 3] = e0 / t;
-      wdl[i * 3 + 1] = e1 / t;
-      wdl[i * 3 + 2] = e2 / t;
-    }
-    return { policy: out.policy.data as Float32Array, wdl };
+export async function evaluateBatch(features: Float32Array, n: number): Promise<BatchOutput> {
+  const l = level;
+  await load(l);
+  const id = nextId++;
+  return new Promise<BatchOutput>((resolve, reject) => {
+    runWaiters.set(id, { resolve, reject });
+    post({ type: 'run', id, level: l, features, n });
   });
-  queue = job.catch(() => undefined);
-  return job;
 }
