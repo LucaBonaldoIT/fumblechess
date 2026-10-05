@@ -1,0 +1,17 @@
+node_modules
+dist
+coverage
+tmp
+.DS_Store
+
+# trained models: kept locally, not in git; Vite copies them into dist/models/
+public/models/*.onnx
+
+# ML pipeline: environment and large intermediate files (see ml/README.md)
+ml/.venv
+ml/__pycache__
+ml/data
+ml/checkpoints
+ml/results/*.pgn
+*.pt
+*.npz

@@ -1,0 +1,17 @@
+{
+  "name": "FumbleChess",
+  "short_name": "FumbleChess",
+  "description": "Play chess against an AI that plays like a human, mistakes included.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#171615",
+  "theme_color": "#b02e0c",
+  "categories": ["games", "education"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "name": "fumblechess",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A chess opponent that imitates human play, blunders included: a transformer trained on Lichess games with a small neural tree search, running entirely in the browser.",
+  "license": "GPL-3.0-or-later",
+  "author": "Luca Bonaldo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucaBonaldoIT/fumblechess.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LucaBonaldoIT/fumblechess/issues"
+  },
+  "homepage": "https://fumblechess.lucabonaldo.dev/",
+  "keywords": [
+    "chess",
+    "neural-network",
+    "transformer",
+    "mcts",
+    "onnx",
+    "webassembly",
+    "human-like",
+    "stockfish",
+    "lichess"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "brand": "node scripts/generate-brand.mjs"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9",
+    "puppeteer-core": "^25.12.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@lichess-org/chessground": "^10.1.1",
+    "chess.js": "^1.4.0",
+    "onnxruntime-web": "^1.30.0",
+    "stockfish": "^19.0.0"
+  }
+}

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+      body {
+        position: relative;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+          sans-serif;
+        color: #f4f1ec;
+        background:
+          radial-gradient(900px 520px at 8% 0%, rgba(176, 46, 12, 0.28), transparent 62%),
+          radial-gradient(800px 600px at 100% 100%, rgba(255, 255, 255, 0.05), transparent 60%),
+          linear-gradient(135deg, #1a1816 0%, #121110 55%, #0e0d0c 100%);
+      }
+      .copy {
+        position: absolute;
+        left: 72px;
+        top: 0;
+        bottom: 0;
+        width: 560px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 34px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        font-size: 50px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .brand svg {
+        width: 84px;
+        height: 84px;
+        filter: drop-shadow(0 10px 24px rgba(176, 46, 12, 0.45));
+      }
+      .brand em {
+        font-style: normal;
+        color: #e5694a;
+      }
+      h1 {
+        margin: 0;
+        font-size: 74px;
+        line-height: 1.04;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+      }
+      h1 span {
+        color: #e5694a;
+      }
+      p {
+        margin: 0;
+        font-size: 29px;
+        line-height: 1.4;
+        color: #a9a29a;
+      }
+      .url {
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 28px;
+        font-weight: 700;
+        color: #e5694a;
+      }
+      .shot {
+        position: absolute;
+        left: 640px;
+        top: 96px;
+        width: 760px;
+        transform: perspective(1500px) rotateY(-17deg) rotateX(7deg) rotateZ(-1.5deg);
+        transform-origin: 0% 50%;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow:
+          0 50px 90px rgba(0, 0, 0, 0.65),
+          0 0 0 8px rgba(255, 255, 255, 0.03);
+        overflow: hidden;
+      }
+      .shot img {
+        display: block;
+        width: 100%;
+      }
+      .fade {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent 70%, rgba(14, 13, 12, 0.55) 100%);
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="copy">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect width="64" height="64" rx="14" fill="#b02e0c" />
+          <g fill="#fff">
+            <rect x="20" y="12" width="6" height="10" />
+            <rect x="29" y="12" width="6" height="10" />
+            <rect x="38" y="12" width="6" height="10" />
+            <rect x="20" y="21" width="24" height="6" />
+            <path d="M25 27h14l2 14H23z" />
+            <rect x="18" y="40" width="28" height="5" />
+            <rect x="15" y="45" width="34" height="7" rx="1.5" />
+          </g>
+        </svg>
+        <span>Fumble<em>Chess</em></span>
+      </div>
+      <h1>Chess against an AI that <span>fumbles like a human.</span></h1>
+      <p>Trained on real Lichess games. A neural tree search that blunders on purpose.</p>
+      <div class="url">fumblechess.lucabonaldo.dev</div>
+    </div>
+    <div class="shot"><img src="app-screenshot.png" alt="" /></div>
+    <div class="fade"></div>
+  </body>
+</html>

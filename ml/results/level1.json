@@ -1,0 +1,75 @@
+{
+  "bot": "bot-level1",
+  "rating": 698.1717270337144,
+  "ci95": 219.78682551293412,
+  "ratings": {
+    "bot-level1": 698.1717270337144,
+    "sf1320": 1320.0,
+    "sf1320-rand30": 1026.1436921160148,
+    "sf1320-rand60": 469.096360105576,
+    "sf1500": 1500.0,
+    "sf1700": 1700.0
+  },
+  "pairings": [
+    {
+      "a": "bot-level1",
+      "b": "sf1320",
+      "wins": 0,
+      "draws": 1,
+      "losses": 19
+    },
+    {
+      "a": "bot-level1",
+      "b": "sf1500",
+      "wins": 0,
+      "draws": 0,
+      "losses": 20
+    },
+    {
+      "a": "bot-level1",
+      "b": "sf1700",
+      "wins": 0,
+      "draws": 0,
+      "losses": 20
+    },
+    {
+      "a": "bot-level1",
+      "b": "sf1320-rand30",
+      "wins": 2,
+      "draws": 1,
+      "losses": 17
+    },
+    {
+      "a": "bot-level1",
+      "b": "sf1320-rand60",
+      "wins": 15,
+      "draws": 2,
+      "losses": 3
+    },
+    {
+      "a": "sf1320-rand30",
+      "b": "sf1320",
+      "wins": 2,
+      "draws": 2,
+      "losses": 16
+    },
+    {
+      "a": "sf1320-rand60",
+      "b": "sf1320",
+      "wins": 0,
+      "draws": 0,
+      "losses": 20
+    }
+  ],
+  "settings": {
+    "level": 1,
+    "games": 20,
+    "anchors": "1320,1500,1700",
+    "weak": "0.3,0.6",
+    "movetime": 0.1,
+    "random_plies": 2,
+    "max_plies": 200,
+    "seed": 0,
+    "out": "data/ratings"
+  }
+}

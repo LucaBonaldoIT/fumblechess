@@ -1,0 +1,7 @@
+torch
+numpy
+python-chess
+onnx
+onnxruntime
+zstandard
+certifi

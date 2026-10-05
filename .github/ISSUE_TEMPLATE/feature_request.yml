@@ -1,0 +1,11 @@
+name: Feature request
+description: An idea to improve FumbleChess
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to see?
+      description: What problem would it solve?
+    validations:
+      required: true

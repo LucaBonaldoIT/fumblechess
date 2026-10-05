@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FumbleChess: Play Chess Against a Human-Like AI</title>
+    <meta
+      name="description"
+      content="Play chess against an AI that plays like a human, mistakes included. Trained on real Lichess games, three levels, live search view. Free, in your browser."
+    />
+    <meta
+      name="keywords"
+      content="chess, play chess online, chess AI, human-like chess AI, chess bot, play chess against computer, neural network chess, Lichess, Stockfish evaluation, Maia alternative"
+    />
+    <meta name="author" content="Luca Bonaldo" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="canonical" href="__SITE_URL__/" />
+
+    <meta name="theme-color" content="#f3f0eb" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171615" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="FumbleChess" />
+    <meta property="og:title" content="FumbleChess: Play Chess Against a Human-Like AI" />
+    <meta
+      property="og:description"
+      content="An AI trained on real Lichess games that plays like a person, blunders included. Three levels, a live look at its search, no install."
+    />
+    <meta property="og:url" content="__SITE_URL__/" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content="__SITE_URL__/og-image.png" />
+    <meta property="og:image:secure_url" content="__SITE_URL__/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="FumbleChess: chess against an AI that fumbles like a human. Screenshot of the board with the AI's candidate moves."
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FumbleChess: Play Chess Against a Human-Like AI" />
+    <meta
+      name="twitter:description"
+      content="An AI trained on real Lichess games that plays like a person, blunders included. Three levels, a live look at its search, no install."
+    />
+    <meta name="twitter:image" content="__SITE_URL__/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="FumbleChess: chess against an AI that fumbles like a human. Screenshot of the board with the AI's candidate moves."
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "__SITE_URL__/#website",
+            "url": "__SITE_URL__/",
+            "name": "FumbleChess",
+            "inLanguage": "en",
+            "publisher": { "@id": "__SITE_URL__/#author" }
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "__SITE_URL__/#app",
+            "name": "FumbleChess",
+            "url": "__SITE_URL__/",
+            "description": "Play chess against an AI trained on real Lichess games to play like a human, mistakes included. Three difficulty levels, a live view of the AI's search and a Stockfish evaluation bar.",
+            "applicationCategory": "GameApplication",
+            "genre": "Chess",
+            "operatingSystem": "Any (web browser)",
+            "browserRequirements": "Requires JavaScript and WebAssembly",
+            "image": "__SITE_URL__/og-image.png",
+            "inLanguage": "en",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "isPartOf": { "@id": "__SITE_URL__/#website" },
+            "author": { "@id": "__SITE_URL__/#author" },
+            "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+            "codeRepository": "https://github.com/LucaBonaldoIT/fumblechess"
+          },
+          {
+            "@type": "Person",
+            "@id": "__SITE_URL__/#author",
+            "name": "Luca Bonaldo",
+            "url": "https://lucabonaldo.dev"
+          }
+        ]
+      }
+    </script>
+    <script>
+      // set theme before first paint to avoid a flash
+      try {
+        var t = localStorage.getItem('deepchess:theme');
+        if (t !== 'light' && t !== 'dark')
+          t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = t;
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <noscript>
+      <h1>FumbleChess: Play Chess Against a Human-Like AI</h1>
+      <p>
+        FumbleChess is a free chess opponent that plays like a person, blunders included. It needs
+        JavaScript and WebAssembly to run the neural networks in your browser. Source code:
+        <a href="https://github.com/LucaBonaldoIT/fumblechess"
+          >github.com/LucaBonaldoIT/fumblechess</a
+        >.
+      </p>
+    </noscript>
+    <section id="about" aria-label="About FumbleChess"><!--ABOUT--></section>
+    <footer id="foot">
+      <a href="#about">How it works</a> · <a href="#credits">Credits</a> ·
+      <a href="https://github.com/LucaBonaldoIT/fumblechess" rel="noopener">Source on GitHub</a> ·
+      <a href="https://lucabonaldo.dev" rel="noopener">Made by Luca Bonaldo</a>
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
