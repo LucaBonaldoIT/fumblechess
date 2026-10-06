@@ -1785,6 +1785,7 @@ html {
   }
   .ab-board {
     max-width: 300px;
+    justify-self: center;
   }
   .ab-flow,
   .ab-loop {
