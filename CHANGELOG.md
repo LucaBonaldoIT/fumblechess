@@ -15,6 +15,7 @@ All notable changes are documented here. The format follows
 - During a game the button under the controls is "Resign"; "New game" appears only before the first move or once the
   game has ended. A resignation is kept in the PGN, so it survives a reload.
 - New players start as White (was a random side).
+- No blur behind the game-over card, and no icon above its title.
 
 ### Removed
 

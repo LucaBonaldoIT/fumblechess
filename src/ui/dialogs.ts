@@ -1,9 +1,9 @@
 export type Outcome = 'win' | 'loss' | 'draw';
 
-const COPY: Record<Outcome, { glyph: string; title: string }> = {
-  win: { glyph: '♔', title: 'You won' },
-  loss: { glyph: '♚', title: 'You lost' },
-  draw: { glyph: '½', title: 'Draw' },
+const TITLE: Record<Outcome, string> = {
+  win: 'You won',
+  loss: 'You lost',
+  draw: 'Draw',
 };
 
 export function closeGameOver() {
@@ -21,11 +21,10 @@ export function showGameOver(
   const el = document.createElement('div');
   el.className = `board-over over ${outcome}`;
   el.setAttribute('role', 'dialog');
-  el.setAttribute('aria-label', COPY[outcome].title);
+  el.setAttribute('aria-label', TITLE[outcome]);
   el.innerHTML = `
     <div class="dlg">
-      <div class="badge">${COPY[outcome].glyph}</div>
-      <h2>${COPY[outcome].title}</h2>
+      <h2>${TITLE[outcome]}</h2>
       <p class="sub">${reason}</p>
       <div class="over-actions">
         <button type="button" class="primary" data-act="new">New game</button>

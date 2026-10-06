@@ -959,7 +959,6 @@ button {
   place-items: center;
   padding: 12px;
   background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
   animation: pop 0.18s ease-out;
 }
 .board-over .dlg {
@@ -1022,26 +1021,6 @@ button {
   padding: 12px 16px;
 }
 
-.over .badge {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  font-size: 40px;
-  line-height: 1;
-  background: var(--surface-2);
-}
-.over.win .badge {
-  background: var(--primary);
-  color: var(--on-primary);
-  box-shadow: 0 0 0 8px color-mix(in srgb, var(--primary) 22%, transparent);
-}
-.over.loss .badge {
-  background: #2b2926;
-  color: #f4f1ec;
-}
 .over .over-actions {
   display: flex;
   flex-direction: column;
