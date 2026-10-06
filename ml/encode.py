@@ -1,7 +1,7 @@
-"""Board encoding. Must match src/ai.ts (encodeBoard) exactly.
+"""Board encoding. Must match src/engine/encoding.ts (encodeBoard) exactly.
 
 Square index = rank * 8 + file, a1 = 0, h8 = 63 (same as python-chess).
-Per-square features (N_FEATURES = 22):
+Per-square features (N_FEATURES = 34):
   0-5   white P N B R Q K one-hot
   6-11  black p n b r q k one-hot
   12    side to move is white                          (broadcast to all squares)
@@ -11,17 +11,21 @@ Per-square features (N_FEATURES = 22):
   19    current position has occurred twice before     (broadcast)
   20    halfmove clock / 100, capped at 1              (broadcast)
   21    fullmove number / 100, capped at 1             (broadcast)
+  22-33 the last HISTORY moves, most recent first: 22 + 2k on the from square and 23 + 2k on the to square
+        of the move played k + 1 plies ago (castling is the king's move)
 Move index = from_square * 64 + to_square (promotions are always queen).
 """
 import chess
 import numpy as np
 
-N_FEATURES = 22
+HISTORY = 6
+N_FEATURES = 22 + 2 * HISTORY
 N_MOVES = 64 * 64
 
 
 def encode_board(board: chess.Board, prev_occurrences: int = 0) -> np.ndarray:
-    """`prev_occurrences`: how many times this exact position (pieces, side, castling, legal ep) came up earlier in the game."""
+    """`prev_occurrences`: how many times this exact position (pieces, side, castling, legal ep) came up earlier in the game.
+    The previous moves are read from `board.move_stack`."""
     x = np.zeros((64, N_FEATURES), dtype=np.float32)
     for sq, piece in board.piece_map().items():
         x[sq, (piece.piece_type - 1) + (0 if piece.color == chess.WHITE else 6)] = 1.0
@@ -36,6 +40,9 @@ def encode_board(board: chess.Board, prev_occurrences: int = 0) -> np.ndarray:
     x[:, 19] = 1.0 if prev_occurrences >= 2 else 0.0
     x[:, 20] = min(board.halfmove_clock, 100) / 100
     x[:, 21] = min(board.fullmove_number, 100) / 100
+    for k, mv in enumerate(reversed(board.move_stack[-HISTORY:])):
+        x[mv.from_square, 22 + 2 * k] = 1.0
+        x[mv.to_square, 23 + 2 * k] = 1.0
     return x
 
 

@@ -13,5 +13,5 @@ export const LEVELS: { id: Level; label: string; elo: string; search: SearchConf
     search: { sims: 24, maxMs: 1500, temperature: 1.0 },
   },
   { id: 2, label: 'Club', elo: '1600–2400', search: { sims: 96, maxMs: 2500, temperature: 0.8 } },
-  { id: 3, label: 'Master', elo: '2800+', search: { sims: 180, maxMs: 4500, temperature: 0.6 } },
+  { id: 3, label: 'Master', elo: '2400+', search: { sims: 180, maxMs: 4500, temperature: 0.6 } },
 ];

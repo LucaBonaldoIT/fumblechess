@@ -32,7 +32,7 @@ export const aboutHtml = `
     </div>
     <div class="card-a">
       <h4>Three models, three bands</h4>
-      <p><b>Beginner</b> 800–1200, <b>Club</b> 1600–2400, <b>Master</b> 2800+. A 1000-rated and a 2900-rated player differ in <em>which moves they choose</em>, so each model imitates its own group. Master games are so rare that bullet games are included to find enough.</p>
+      <p><b>Beginner</b> 800–1200, <b>Club</b> 1600–2400, <b>Master</b> 2400+. A 1000-rated and a 2500-rated player differ in <em>which moves they choose</em>, so each model imitates its own group. Each model also sees the last six moves, since people react to what was just played.</p>
     </div>
     <div class="card-a">
       <h4>What it learns from</h4>

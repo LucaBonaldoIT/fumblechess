@@ -21,6 +21,8 @@ CASES = {
     "castling rights lost": "e4 e5 Ke2",
     "middlegame": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 d6 c3 O-O h3 Nb8 d4 Nbd7",
     "queen promotion": "e4 d5 exd5 c6 dxc6 Nf6 cxb7 Nbd7 bxa8=Q",
+    "castling in the last moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 O-O",
+    "one move played": "d4",
 }
 
 

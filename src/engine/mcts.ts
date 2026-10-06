@@ -1,7 +1,7 @@
 import { Chess } from 'chess.js';
 import type { Square } from 'chess.js';
-import { encodeBoard, N_FEATURES, positionKey, sqIndex } from './encoding';
-import { Repetitions } from './repetitions';
+import { encodeBoard, N_FEATURES, sqIndex } from './encoding';
+import { GameLine } from './gameline';
 import type { Evaluator, SearchConfig, Wdl } from './types';
 
 /**
@@ -128,7 +128,7 @@ function expand(node: Node, legal: Leaf['legal'], policy: Float32Array, offset: 
 }
 
 /** One selection pass from the root. Mutates `chess` while descending and restores it before returning. */
-function simulate(root: Node, chess: Chess, rep: Repetitions): Leaf | 'terminal' | 'collision' {
+function simulate(root: Node, chess: Chess, line: GameLine): Leaf | 'terminal' | 'collision' {
   const path: Node[] = [root];
   root.n += 1;
   root.w += 1;
@@ -137,7 +137,7 @@ function simulate(root: Node, chess: Chess, rep: Repetitions): Leaf | 'terminal'
   const restore = () => {
     for (let i = 0; i < plies; i++) {
       chess.undo();
-      rep.pop();
+      line.pop();
     }
   };
   for (;;) {
@@ -157,7 +157,7 @@ function simulate(root: Node, chess: Chess, rep: Repetitions): Leaf | 'terminal'
       const leaf: Leaf = {
         node,
         path,
-        features: encodeBoard(chess, rep.previous()),
+        features: encodeBoard(chess, line.previous(), line.recent()),
         legal: legalMoves(chess),
         whiteToMove: chess.turn() === 'w',
       };
@@ -166,7 +166,7 @@ function simulate(root: Node, chess: Chess, rep: Repetitions): Leaf | 'terminal'
     }
     const edge = select(node);
     const played = chess.move({ from: edge.from, to: edge.to, promotion: edge.promotion });
-    rep.push(positionKey(played.after));
+    line.push(played);
     plies += 1;
     if (!edge.child) {
       edge.child = newNode();
@@ -210,8 +210,8 @@ export async function search(chess: Chess, hooks: SearchHooks): Promise<SearchRe
   const sans = new Map(rootMoves.map((m) => [m.from + m.to + (m.promotion ?? ''), m.san]));
 
   // evaluate the root once to get priors and the value head's opinion
-  const rep = new Repetitions(chess);
-  const rootOut = await evaluateBatch(encodeBoard(chess, rep.previous()), 1);
+  const line = new GameLine(chess);
+  const rootOut = await evaluateBatch(encodeBoard(chess, line.previous(), line.recent()), 1);
   const root = newNode();
   expand(root, rootMoves, rootOut.policy, 0);
   const wdl: Wdl = [rootOut.wdl[0], rootOut.wdl[1], rootOut.wdl[2]];
@@ -222,7 +222,7 @@ export async function search(chess: Chess, hooks: SearchHooks): Promise<SearchRe
     if (hooks.aborted?.()) return null;
     const leaves: Leaf[] = [];
     while (leaves.length < BATCH && sims + leaves.length < cfg.sims) {
-      const r = simulate(root, chess, rep);
+      const r = simulate(root, chess, line);
       if (r === 'collision') break;
       if (r === 'terminal') sims += 1;
       else leaves.push(r);

@@ -5,16 +5,17 @@ The models in `public/models/` come from the pipeline in [`ml/`](../ml). You onl
 ## 1. Data
 
 `ml/fetch_lichess.py` streams a monthly dump from the [Lichess open database](https://database.lichess.org)
-(CC0), stops once it has enough games, and keeps `(position, human move, game result)` samples.
+(CC0), stops once it has enough games, and keeps `(position + last 6 moves, human move, game result)` samples.
 
-| Level | Elo band (both players) | Speeds               | Games | Positions |
-| ----- | ----------------------- | -------------------- | ----- | --------- |
-| 1     | 800-1200                | blitz, rapid, class. | 8,000 | ~80,000   |
-| 2     | 1600-2400               | blitz, rapid, class. | 8,000 | ~80,000   |
-| 3     | 2800+                   | + bullet             | 8,000 | ~80,000   |
+| Level | Elo band (both players) | Speeds               | Games   | Positions per game | Positions |
+| ----- | ----------------------- | -------------------- | ------- | ------------------ | --------- |
+| 1     | 800-1200                | blitz, rapid, class. | 100,000 | 10                 | ~1M       |
+| 2     | 1600-2400               | blitz, rapid, class. | 100,000 | 10                 | ~1M       |
+| 3     | 2400+                   | blitz, rapid, class. | 40,000  | 25                 | ~1M       |
 
-Only January 2024 (the start of the file) was used. Games must end normally and last at least 10 plies; 10 random
-positions are sampled per game. Master games are so rare that finding 8,000 meant streaming about 2.5 GB.
+Each level reads the start of four monthly dumps (January to April 2024) in parallel. Games must end normally and last
+at least 10 plies; positions are sampled at random within each game. 2400+ games are rare (about one game in 330), so
+level 3 samples more positions per game and streamed about 4.3 GB to find 40,000.
 
 ```sh
 cd ml
@@ -28,11 +29,12 @@ Architecture: see [architecture.md](architecture.md#the-network). Training (`ml/
 
 - policy target: the move the human played, with illegal moves masked out (cross-entropy)
 - value target: the game result as win/draw/loss (cross-entropy, weight 0.5)
-- AdamW, learning rate 4e-4 with a one-cycle schedule, batch 128, 1,500 steps (about 4 minutes on an Apple GPU),
-  5% of positions held out
+- AdamW, learning rate 6e-4 with a one-cycle schedule, batch 512, 3,500 steps (about 1.8 passes over the data, about
+  30 minutes per level on an M4 Pro), 5% of positions held out
 
-Held-out top-1 agreement with the human move after training: **37.5%** (level 1), **37.7%** (level 2),
-**34.0%** (level 3). The models are small and briefly trained, so the value head in particular is rough.
+Held-out top-1 agreement with the human move after training: **44.9%** (level 1), **42.4%** (level 2),
+**43.2%** (level 3), up from 37.5%, 37.7% and 34.0% for the first models (80,000 positions, no move history, 4 minutes
+of training).
 
 ```sh
 ./train_levels.sh        # trains, then exports ../public/models/level{1,2,3}.onnx
@@ -76,13 +78,15 @@ How it works:
 - **Fit:** all games go into one Elo likelihood (draw = half a point) with the anchors fixed and a weak prior so
   all-win or all-loss pairings stay finite.
 
-| Level        | Rating (Stockfish UCI_Elo scale) | Games per pairing |
-| ------------ | -------------------------------- | ----------------- |
-| 1 (Beginner) | **698 ± 220** (95%)              | 20                |
-| 2 (Club)     | not rated yet                    |                   |
-| 3 (Master)   | not rated yet                    |                   |
+| Level        | Rating (Stockfish UCI_Elo scale, 95%) | Stockfish anchors      | Games per pairing |
+| ------------ | ------------------------------------- | ---------------------- | ----------------- |
+| 1 (Beginner) | **840 ± 196**                         | 1320, 1500, 1700       | 20                |
+| 2 (Club)     | **1074 ± 138**                        | 1320, 1500, 1700, 2000 | 20                |
+| 3 (Master)   | **1312 ± 121**                        | 1320, 1700, 2000, 2400 | 20                |
 
-Raw results: [`ml/results/level1.json`](../ml/results/level1.json).
+Beginner and Club also play the 30% and 60% random-move opponents, Master only the 30% one. The first Beginner model
+(80,000 positions, no move history) was rated 698 ± 220 with the same opponents. Raw results:
+[`ml/results/`](../ml/results), e.g. `.venv/bin/python rate.py --level 3 --anchors 1320,1700,2000,2400 --weak 0.3`.
 
 **Caveats.** This is Stockfish's UCI_Elo scale, **not** the Lichess scale of the training data, so it is not comparable
 with the 800-1200 label. It is measured with a short fixed move time on the WebAssembly "lite" build, the random-move

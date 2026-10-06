@@ -10,7 +10,7 @@ describe('board encoding matches the Python encoder', () => {
     it(c.name, () => {
       const chess = new Chess();
       for (const san of c.moves) chess.move(san);
-      const got = encodeBoard(chess, c.prevOccurrences);
+      const got = encodeBoard(chess, c.prevOccurrences, chess.history({ verbose: true }));
       expect(got.length).toBe(64 * N_FEATURES);
       const worst = Math.max(...Array.from(got, (v, i) => Math.abs(v - c.features[i])));
       expect(worst).toBeLessThan(1e-6);

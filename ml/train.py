@@ -1,6 +1,6 @@
 """Train one level's policy/value network on human games from fetch_lichess.py.
 
-  .venv/bin/python train.py --data data/level1.npz --out checkpoints/level1.pt
+  .venv/bin/python train.py --data data/level1-*.npz --out checkpoints/level1.pt
 
 Policy target: the move the human played (illegal moves masked out). Value target: the game result as win/draw/loss.
 """
@@ -16,16 +16,17 @@ from encode import N_MOVES
 from model import ChessNet, Config
 
 
-def load(path: str):
-    d = np.load(path)
-    x = torch.from_numpy(d["x"])  # uint8 [N,64,22]; the last two (clock) features are stored x100
-    mask = torch.from_numpy(np.unpackbits(d["mask"], axis=1)[:, :N_MOVES].astype(bool))
-    return x, torch.from_numpy(d["move"].astype(np.int64)), mask, torch.from_numpy(d["wdl"])
+def load(paths: list[str]):
+    ds = [np.load(p) for p in paths]
+    cat = lambda key: np.concatenate([d[key] for d in ds])
+    x = torch.from_numpy(cat("x"))  # uint8 [N,64,N_FEATURES]; the two clock features (20, 21) are stored x100
+    mask = torch.from_numpy(np.unpackbits(cat("mask"), axis=1)[:, :N_MOVES].astype(bool))
+    return x, torch.from_numpy(cat("move").astype(np.int64)), mask, torch.from_numpy(cat("wdl"))
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--data", required=True, help="npz from fetch_lichess.py")
+    ap.add_argument("--data", required=True, nargs="+", help="npz files from fetch_lichess.py")
     ap.add_argument("--steps", type=int, default=1500)
     ap.add_argument("--batch", type=int, default=128)
     ap.add_argument("--lr", type=float, default=4e-4)
@@ -47,7 +48,7 @@ def main():
 
     def losses(idx):
         xb = x[idx].float()
-        xb[..., 20:] /= 100  # halfmove clock and move number back to 0-1
+        xb[..., 20:22] /= 100  # halfmove clock and move number back to 0-1
         logits, v = model(xb.to(device))
         logits = logits.masked_fill(~mask[idx].to(device), -1e9)
         mb, vb = move[idx].to(device), wdl[idx].to(device)

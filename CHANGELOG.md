@@ -3,6 +3,16 @@
 All notable changes are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+
+- The network also sees the last 6 moves (from and to squares), 34 input features per square instead of 22.
+- Retrained all three levels on about 1M positions each (four monthly Lichess dumps, previously 80,000) for about 30
+  minutes each: held-out agreement with the human move is now 44.9% / 42.4% / 43.2% (was 37.5% / 37.7% / 34.0%).
+- Rated against Stockfish (UCI_Elo scale): Beginner 840 ± 196 (was 698 ± 220), Club 1074 ± 138, Master 1312 ± 121.
+- Master now imitates 2400+ players (was 2800+, too rare to train on), without bullet games.
+
 ## [1.0.0]
 
 ### Added

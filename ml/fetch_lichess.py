@@ -118,7 +118,7 @@ def main():
                             for idx, _ in legal_move_indices(board):
                                 mask[idx] = True
                             f = encode_board(board, seen_positions[position_key(board)] - 1)
-                            f[:, 20:] *= 100  # the two clock features are stored as integers 0-100 (train.py divides by 100)
+                            f[:, 20:22] *= 100  # the two clock features are stored as integers 0-100 (train.py divides by 100)
                             X.append(np.rint(f).astype(np.uint8))
                             M.append(np.packbits(mask))
                             Y.append(move_index(mv))

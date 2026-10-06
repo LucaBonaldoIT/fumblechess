@@ -1,0 +1,68 @@
+{
+  "bot": "bot-level3",
+  "rating": 1311.8874683630343,
+  "ci95": 121.07889954356516,
+  "ratings": {
+    "bot-level3": 1311.8874683630343,
+    "sf1320": 1320.0,
+    "sf1320-rand30": 852.9014282754165,
+    "sf1700": 1700.0,
+    "sf2000": 2000.0,
+    "sf2400": 2400.0
+  },
+  "pairings": [
+    {
+      "a": "bot-level3",
+      "b": "sf1320",
+      "wins": 8,
+      "draws": 1,
+      "losses": 11
+    },
+    {
+      "a": "bot-level3",
+      "b": "sf1700",
+      "wins": 1,
+      "draws": 3,
+      "losses": 16
+    },
+    {
+      "a": "bot-level3",
+      "b": "sf2000",
+      "wins": 0,
+      "draws": 3,
+      "losses": 17
+    },
+    {
+      "a": "bot-level3",
+      "b": "sf2400",
+      "wins": 0,
+      "draws": 1,
+      "losses": 19
+    },
+    {
+      "a": "bot-level3",
+      "b": "sf1320-rand30",
+      "wins": 18,
+      "draws": 0,
+      "losses": 2
+    },
+    {
+      "a": "sf1320-rand30",
+      "b": "sf1320",
+      "wins": 0,
+      "draws": 1,
+      "losses": 19
+    }
+  ],
+  "settings": {
+    "level": 3,
+    "games": 20,
+    "anchors": "1320,1700,2000,2400",
+    "weak": "0.3",
+    "movetime": 0.1,
+    "random_plies": 2,
+    "max_plies": 200,
+    "seed": 0,
+    "out": "results"
+  }
+}

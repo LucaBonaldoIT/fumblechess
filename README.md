@@ -34,7 +34,7 @@ it look a few moves ahead without turning it into an engine.
 ## Features
 
 - **Three levels**, each its own network trained on games between players of one Elo band: **Beginner**
-  (800-1200), **Club** (1600-2400) and **Master** (2800+). The level is fixed while a game is on.
+  (800-1200), **Club** (1600-2400) and **Master** (2400+). The level is fixed while a game is on.
 - **Neural tree search**: AlphaZero-style MCTS driven by the network's policy and value, with a deliberately small
   budget. The move is _sampled_ from the search, so it never plays the same game twice.
 - **Watch it think**: the "AI thoughts" panel shows the candidate moves, their share of the search and expected
@@ -53,8 +53,8 @@ it look a few moves ahead without turning it into an engine.
 
 ## How it plays
 
-1. The position becomes 64 tokens (one per square, 22 features each: pieces, side to move, castling, en passant,
-   repetitions, move counters).
+1. The position becomes 64 tokens (one per square, 34 features each: pieces, side to move, castling, en passant,
+   repetitions, move counters and the last 6 moves played).
 2. A **transformer** (8 layers, about 7M parameters) outputs a **policy** (how natural each move looks) and a **value**
    (who is winning).
 3. A **Monte-Carlo tree search** (24, 96 or 180 simulations by level) tests those instincts a few moves deep.
@@ -65,9 +65,10 @@ Full details in [docs/architecture.md](docs/architecture.md) and in the app's Ab
 
 ## Strength
 
-The Beginner level was rated against Stockfish at about **698 ± 220** on Stockfish's UCI_Elo scale (20 games per
-pairing). That scale is **not** the Lichess scale of the training data, so read it as rough and relative. Club and
-Master are not rated yet. Method, caveats and the script: [docs/training.md](docs/training.md).
+Rated against Stockfish on its UCI_Elo scale (20 games per pairing, 95% intervals): **Beginner 840 ± 196**,
+**Club 1074 ± 138**, **Master 1312 ± 121** (the first Beginner model, trained on 80,000 positions without the move
+history, was 698 ± 220). That scale is **not** the Lichess scale of the training data, so read it as rough and
+relative. Method, caveats and the script: [docs/training.md](docs/training.md).
 
 ## Run it
 
