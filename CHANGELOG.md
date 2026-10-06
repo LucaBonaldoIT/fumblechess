@@ -12,6 +12,13 @@ All notable changes are documented here. The format follows
   minutes each: held-out agreement with the human move is now 44.9% / 42.4% / 43.2% (was 37.5% / 37.7% / 34.0%).
 - Rated against Stockfish (UCI_Elo scale): Beginner 840 ± 196 (was 698 ± 220), Club 1074 ± 138, Master 1312 ± 121.
 - Master now imitates 2400+ players (was 2800+, too rare to train on), without bullet games.
+- During a game the button under the controls is "Resign"; "New game" appears only before the first move or once the
+  game has ended. A resignation is kept in the PGN, so it survives a reload.
+- New players start as White (was a random side).
+
+### Removed
+
+- The status box above the button (loading, "AI thinking…", "Check" and error messages).
 
 ## [1.0.0]
 

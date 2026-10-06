@@ -78,7 +78,6 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <button type="button" role="radio" data-side="random"><span class="glyph">?</span><b>Random</b></button>
           <button type="button" role="radio" data-side="b"><span class="glyph">♚</span><b>Black</b></button>
         </div>
-        <div id="status" role="status"></div>
         <div class="actions">
           <button id="reset" type="button">New game</button>
         </div>
@@ -103,23 +102,23 @@ setLevel(level);
 
 const COLOR_KEY = 'deepchess:color';
 /** The side the human plays; the AI plays the other. */
-let human: 'w' | 'b' = Math.random() < 0.5 ? 'w' : 'b'; // fresh session: random side
+let human: 'w' | 'b' = 'w'; // fresh session: White
 try {
   const saved = localStorage.getItem(COLOR_KEY);
   if (saved === 'w' || saved === 'b') human = saved;
 } catch {
-  // storage unavailable: keep the random side
+  // storage unavailable: play White
 }
 
 /** What the next "New game" uses. */
 type SidePref = 'w' | 'b' | 'random';
 const SIDE_KEY = 'deepchess:side';
-let sidePref: SidePref = 'random';
+let sidePref: SidePref = 'w';
 try {
   const saved = localStorage.getItem(SIDE_KEY);
-  if (saved === 'w' || saved === 'b') sidePref = saved;
+  if (saved === 'w' || saved === 'b' || saved === 'random') sidePref = saved;
 } catch {
-  // storage unavailable: random
+  // storage unavailable: White
 }
 
 const STORAGE_KEY = 'deepchess:pgn';
@@ -130,7 +129,14 @@ try {
 } catch {
   chess.reset(); // corrupt or unavailable storage: start fresh
 }
-const statusEl = document.querySelector<HTMLDivElement>('#status')!;
+
+/** Resigning is recorded in the PGN headers, so a resigned game stays over after a reload. */
+function resigned(): boolean {
+  return chess.getHeaders().Termination === 'resignation';
+}
+function gameOver(): boolean {
+  return chess.isGameOver() || resigned();
+}
 
 function legalDests(): Map<Key, Key[]> {
   const dests = new Map<Key, Key[]>();
@@ -236,7 +242,6 @@ function viewMove(ply: number) {
     movable: { color: undefined, dests: new Map() },
   });
   if (last) playMove(last.san);
-  statusEl.textContent = '';
   updateMoves();
   requestEval(g);
 }
@@ -277,16 +282,6 @@ let thinking = false;
 const modelReady = () => modelState(level) === 'ready';
 const modelsLoading = () => LEVELS.some((l) => modelState(l.id) === 'loading');
 
-function statusText(): string {
-  const label = LEVELS.find((l) => l.id === level)!.label;
-  if (modelState(level) === 'error')
-    return `Could not load the ${label} model. Select a level to retry.`;
-  if (!modelReady()) return `Loading the ${label} model…`;
-  if (chess.isGameOver()) return ''; // the game-over card on the board says how it ended
-  if (thinking) return 'AI thinking…';
-  return chess.inCheck() ? 'Check' : '';
-}
-
 function save() {
   try {
     localStorage.setItem(STORAGE_KEY, chess.pgn());
@@ -307,7 +302,7 @@ function sync() {
     lastMove,
     movable: {
       color:
-        chess.isGameOver() || chess.turn() !== human || !modelReady()
+        gameOver() || chess.turn() !== human || !modelReady()
           ? undefined
           : human === 'w'
             ? 'white'
@@ -315,12 +310,11 @@ function sync() {
       dests: legalDests(),
     },
   });
-  statusEl.textContent = statusText();
   updatePlayers();
   updateMoves();
   requestEval(chess);
   renderLevels();
-  if (chess.isGameOver()) announceGameOver();
+  if (gameOver()) announceGameOver();
   else if (chess.turn() !== human && !thinking && modelReady()) void aiMove();
 }
 
@@ -330,7 +324,6 @@ async function aiMove() {
   const mine = gen;
   thinking = true;
   renderLevels();
-  statusEl.textContent = statusText();
   try {
     showScanning();
     const t0 = performance.now();
@@ -354,10 +347,7 @@ async function aiMove() {
     sync();
   } catch (err) {
     console.error('AI failed', err);
-    if (mine === gen) {
-      thinking = false;
-      statusEl.textContent = 'AI failed to load (see console)';
-    }
+    if (mine === gen) thinking = false;
   }
 }
 
@@ -452,17 +442,25 @@ function startGame(color: 'w' | 'b') {
 }
 
 function newGame() {
-  // browser confirm: only when there is a game in progress to lose
-  if (
-    !chess.isGameOver() &&
-    chess.history().length > 0 &&
-    !confirm('Start a new game? The current game will be lost.')
-  ) {
-    return;
-  }
   startGame(sidePref === 'random' ? (Math.random() < 0.5 ? 'w' : 'b') : sidePref);
 }
-document.querySelector('#reset')!.addEventListener('click', newGame);
+
+/** A game is running once a move has been played and until it ends: the button resigns it. */
+const gameRunning = () => !gameOver() && chess.history().length > 0;
+
+function resign() {
+  if (!confirm('Resign this game?')) return;
+  gen++; // abort the AI if it is thinking
+  thinking = false;
+  resetThoughts(cg);
+  chess.setHeader('Result', human === 'w' ? '0-1' : '1-0');
+  chess.setHeader('Termination', 'resignation');
+  sync();
+}
+document.querySelector('#reset')!.addEventListener('click', () => {
+  if (gameRunning()) resign();
+  else newGame();
+});
 
 const sideButtons = [...document.querySelectorAll<HTMLButtonElement>('#sides button')];
 function renderSides() {
@@ -492,7 +490,8 @@ function buildPgn(): string {
   const lv = LEVELS.find((l) => l.id === level)!;
   const ai = `FumbleChess AI (${lv.label}, ${lv.elo})`;
   let result = '*';
-  if (chess.isCheckmate()) result = chess.turn() === 'w' ? '0-1' : '1-0';
+  if (resigned()) result = human === 'w' ? '0-1' : '1-0';
+  else if (chess.isCheckmate()) result = chess.turn() === 'w' ? '0-1' : '1-0';
   else if (chess.isDraw()) result = '1/2-1/2';
   g.setHeader('Event', 'FumbleChess game');
   g.setHeader('Site', 'FumbleChess');
@@ -505,9 +504,10 @@ function buildPgn(): string {
 for (const b of document.querySelectorAll('.js-copy'))
   b.addEventListener('click', () => void copyPgn(buildPgn()));
 
-let overAnnounced = chess.isGameOver(); // don't pop the dialog for a finished game restored on load
+let overAnnounced = gameOver(); // don't pop the dialog for a finished game restored on load
 
 function gameOutcome(): { outcome: Outcome; reason: string } {
+  if (resigned()) return { outcome: 'loss', reason: 'by resignation' };
   if (chess.isCheckmate())
     return { outcome: chess.turn() === human ? 'loss' : 'win', reason: 'by checkmate' };
   if (chess.isStalemate()) return { outcome: 'draw', reason: 'by stalemate' };
@@ -557,13 +557,13 @@ document.addEventListener('keydown', (e) => {
 
 const levelButtons = [...document.querySelectorAll<HTMLButtonElement>('#levels button')];
 /** Difficulty can only change before the first move or after the game has ended. */
-const levelLocked = () => !chess.isGameOver() && (chess.history().length > 0 || thinking);
+const levelLocked = () => !gameOver() && (chess.history().length > 0 || thinking);
 
 function renderLevels() {
   const locked = levelLocked();
   const loading = modelsLoading();
   document.querySelector<HTMLElement>('#levels')!.title = locked
-    ? 'Difficulty is locked during a game. Start a new game to change it.'
+    ? 'Difficulty is locked during a game. Finish or resign it to change it.'
     : '';
   for (const b of levelButtons) {
     const id = Number(b.dataset.level) as Level;
@@ -574,7 +574,10 @@ function renderLevels() {
     b.setAttribute('aria-busy', String(modelState(id) === 'loading'));
     b.disabled = locked || loading;
   }
-  document.querySelector<HTMLButtonElement>('#reset')!.disabled = !modelReady(); // no new game without a model
+  const btn = document.querySelector<HTMLButtonElement>('#reset')!;
+  const running = gameRunning();
+  btn.textContent = running ? 'Resign' : 'New game';
+  btn.disabled = !running && !modelReady(); // no new game without a model
 }
 for (const b of levelButtons) {
   b.addEventListener('click', () => {
@@ -588,7 +591,6 @@ for (const b of levelButtons) {
     }
     renderLevels();
     updatePlayers();
-    statusEl.textContent = statusText();
     if (modelReady()) sync(); // already downloaded earlier: nothing to wait for
   });
 }
@@ -599,9 +601,5 @@ sync();
 // when a model finishes (or fails) downloading: update the controls, then enable the board and let the AI start
 onModelStateChange(() => {
   renderLevels();
-  if (modelsLoading()) {
-    statusEl.textContent = statusText();
-  } else if (!thinking && viewPly === null) {
-    sync();
-  }
+  if (!modelsLoading() && !thinking && viewPly === null) sync();
 });
