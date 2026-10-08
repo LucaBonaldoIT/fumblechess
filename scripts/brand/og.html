@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../../node_modules/@lucabonaldo/design/src/fonts.css" />
     <style>
       * {
         box-sizing: border-box;
@@ -15,14 +16,12 @@
       }
       body {
         position: relative;
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-          sans-serif;
-        color: #f4f1ec;
+        font-family: 'Inter', sans-serif;
+        color: #f0ecdf;
         background:
           radial-gradient(900px 520px at 8% 0%, rgba(176, 46, 12, 0.28), transparent 62%),
           radial-gradient(800px 600px at 100% 100%, rgba(255, 255, 255, 0.05), transparent 60%),
-          linear-gradient(135deg, #1a1816 0%, #121110 55%, #0e0d0c 100%);
+          linear-gradient(135deg, #221e19 0%, #1c1915 55%, #110f0c 100%);
       }
       .copy {
         position: absolute;
@@ -39,9 +38,9 @@
         display: flex;
         align-items: center;
         gap: 22px;
-        font-size: 50px;
-        font-weight: 800;
-        letter-spacing: -0.02em;
+        font-family: 'Fraunces', Georgia, serif;
+        font-size: 54px;
+        font-weight: 560;
       }
       .brand svg {
         width: 84px;
@@ -50,29 +49,29 @@
       }
       .brand em {
         font-style: normal;
-        color: #e5694a;
+        color: #ec6a45;
       }
       h1 {
         margin: 0;
+        font-family: 'Fraunces', Georgia, serif;
         font-size: 74px;
         line-height: 1.04;
-        font-weight: 800;
-        letter-spacing: -0.035em;
+        font-weight: 540;
+        letter-spacing: -0.02em;
       }
       h1 span {
-        color: #e5694a;
+        color: #ec6a45;
       }
       p {
         margin: 0;
         font-size: 29px;
         line-height: 1.4;
-        color: #a9a29a;
+        color: rgba(240, 236, 223, 0.64);
       }
       .url {
-        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-        font-size: 28px;
-        font-weight: 700;
-        color: #e5694a;
+        font-size: 26px;
+        font-weight: 600;
+        color: #ec6a45;
       }
       .shot {
         position: absolute;
@@ -95,7 +94,7 @@
       .fade {
         position: absolute;
         inset: 0;
-        background: linear-gradient(90deg, transparent 70%, rgba(14, 13, 12, 0.55) 100%);
+        background: linear-gradient(90deg, transparent 70%, rgba(17, 15, 12, 0.55) 100%);
         pointer-events: none;
       }
     </style>
@@ -105,7 +104,7 @@
       <div class="brand">
         <svg viewBox="0 0 64 64" aria-hidden="true">
           <rect width="64" height="64" rx="14" fill="#b02e0c" />
-          <g fill="#fff">
+          <g fill="#fff7f0">
             <rect x="20" y="12" width="6" height="10" />
             <rect x="29" y="12" width="6" height="10" />
             <rect x="38" y="12" width="6" height="10" />

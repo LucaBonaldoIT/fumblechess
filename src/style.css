@@ -1,30 +1,21 @@
 :root {
-  --primary: #b02e0c;
-  --primary-hover: #96260a;
-  --on-primary: #fff;
-  --accent: #b02e0c; /* primary used for text/icons on the page background */
-  --bg: #f3f0eb;
-  --surface: #fff;
-  --surface-2: #ece8e1;
-  --text: #211f1c;
-  --muted: #6f6a62;
-  --border: #dcd6cc;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.06);
+  /* Colors and fonts come from @lucabonaldo/design (paper & ink), which also handles
+     light/dark. These are this app's aliases for its role tokens. */
+  --primary: var(--ds-accent-fill); /* filled shapes, paired with --on-primary */
+  --primary-hover: var(--ds-accent-fill-hover);
+  --on-primary: var(--ds-on-accent);
+  --accent: var(--ds-accent); /* text and icons on the page background */
+  --bg: var(--ds-bg);
+  --surface: var(--ds-surface);
+  --surface-2: var(--ds-bg-soft);
+  --text: var(--ds-text);
+  --muted: var(--ds-text-soft);
+  --border: var(--ds-line);
+  --shadow: var(--ds-shadow);
   --radius: 10px;
+  /* eval bar: the two sides of the board, same in both themes */
   --eval-dark: #403d39;
   --eval-light: #f0f0f0;
-  color-scheme: light;
-}
-:root[data-theme='dark'] {
-  --accent: #e5694a;
-  --bg: #171615;
-  --surface: #252321;
-  --surface-2: #2f2c29;
-  --text: #efebe4;
-  --muted: #a29b90;
-  --border: #3a3633;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.35);
-  color-scheme: dark;
 }
 
 * {
@@ -35,12 +26,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--ds-font-text);
   -webkit-tap-highlight-color: transparent;
 }
 button {
@@ -67,16 +53,16 @@ button {
 }
 #top h1 {
   margin: 0;
+  font-family: var(--ds-font-display);
   font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 560;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 #top h1 b {
   color: var(--accent);
-  font-weight: 800;
+  font-weight: 640;
 }
 .logo {
   color: var(--primary);
@@ -1070,17 +1056,14 @@ html {
   }
 }
 #about {
-  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'URW Palladio L', P052, Georgia, serif;
-  --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --serif: var(--ds-font-display);
+  --mono: var(--ds-font-mono);
   --sq-light: #f0d9b5;
   --sq-dark: #c0ae91; /* Chessground's brown theme: black at 20% over the light square */
-  --accent-soft: rgba(176, 46, 12, 0.14);
+  --accent-soft: var(--ds-accent-soft);
   max-width: 1240px;
   margin: 0 auto;
   padding: 40px 24px 24px;
-}
-:root[data-theme='dark'] #about {
-  --accent-soft: rgba(229, 105, 74, 0.2);
 }
 .about-inner {
   max-width: 1000px;
@@ -1121,7 +1104,7 @@ html {
 }
 .ab-san {
   font-family: var(--serif);
-  font-weight: 700;
+  font-weight: 560;
   white-space: nowrap;
 }
 
@@ -1152,7 +1135,7 @@ html {
 .ab-hero h2 {
   font-family: var(--serif);
   font-size: clamp(36px, 6vw, 60px);
-  font-weight: 700;
+  font-weight: 560;
   line-height: 1.05;
   letter-spacing: -0.02em;
   margin: 0 0 24px;
@@ -1166,6 +1149,7 @@ html {
   max-width: 720px;
   font-family: var(--serif);
   font-size: 21px;
+  font-weight: 360;
   line-height: 1.55;
 }
 .ab-facts {
@@ -1185,7 +1169,7 @@ html {
 .ab-facts dt {
   font-family: var(--serif);
   font-size: 40px;
-  font-weight: 700;
+  font-weight: 560;
   line-height: 1.1;
   font-variant-numeric: lining-nums;
 }
@@ -1203,7 +1187,7 @@ html {
 .ab-sec h3 {
   font-family: var(--serif);
   font-size: clamp(26px, 3.4vw, 34px);
-  font-weight: 700;
+  font-weight: 560;
   letter-spacing: -0.01em;
   line-height: 1.15;
   margin: 0 0 18px;
@@ -1406,7 +1390,7 @@ html {
 .ab-cross thead th {
   font-family: var(--serif);
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 560;
   border-bottom: 2px solid var(--text);
   white-space: nowrap;
 }
@@ -1566,7 +1550,7 @@ html {
   min-width: 1.4em;
   font-family: var(--serif);
   font-size: 40px;
-  font-weight: 700;
+  font-weight: 560;
   font-style: italic;
   line-height: 1;
   color: var(--accent);
@@ -1653,7 +1637,7 @@ html {
   padding: 14px 0;
   font-family: var(--serif);
   font-size: 19px;
-  font-weight: 700;
+  font-weight: 560;
   list-style: none;
   display: flex;
   align-items: center;
@@ -1688,7 +1672,7 @@ html {
 .ab-math dt {
   font-family: var(--serif);
   font-style: italic;
-  font-weight: 700;
+  font-weight: 560;
 }
 .ab-math dd {
   margin: 0;

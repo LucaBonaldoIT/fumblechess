@@ -30,6 +30,8 @@ import {
   resetThoughts,
   showScanning,
 } from './ui/thoughts';
+import '@lucabonaldo/design/fonts.css';
+import '@lucabonaldo/design/tokens.css';
 import './style.css';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `

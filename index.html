@@ -17,8 +17,7 @@
     <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="__SITE_URL__/" />
 
-    <meta name="theme-color" content="#f3f0eb" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#171615" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f5f2ea" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -93,17 +92,6 @@
             "url": "https://lucabonaldo.dev"
           }
         ]
-      }
-    </script>
-    <script>
-      // set theme before first paint to avoid a flash
-      try {
-        var t = localStorage.getItem('deepchess:theme');
-        if (t !== 'light' && t !== 'dark')
-          t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        document.documentElement.dataset.theme = t;
-      } catch (e) {
-        document.documentElement.dataset.theme = 'light';
       }
     </script>
   </head>
